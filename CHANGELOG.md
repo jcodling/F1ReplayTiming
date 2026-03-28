@@ -2,6 +2,31 @@
 
 All notable changes to F1 Timing Replay will be documented in this file.
 
+## 1.3.1
+
+### Fixes
+- **Live session banner width** — live session card on the home page now matches the width of the round cards
+- **Medium screen layout** — track map, lap analysis panel, and leaderboard no longer overflow on tablet-sized screens when lap analysis is open
+
+---
+
+## 1.3.0
+
+### New Features
+- **Lap Analysis panel** (Beta) — compare lap times for up to two drivers with a line chart and full lap-by-lap history. Accessible via the Laps button on the track map on desktop, or as a collapsible section on mobile. Race replay only
+- **Last lap time column** — shows each driver's most recently completed lap time on the race leaderboard, toggleable in settings. Race replay only
+- **Leaderboard tooltips** — hover over any column value to see what it is (e.g. "Interval to car ahead", "Tyre age", "Last lap time")
+
+### Improvements
+- **Info button on mobile** — the features/info link is now visible in the mobile header
+- **Features page opens in new tab** — no longer interrupts an active replay session
+
+### Fixes
+- **Mobile qualifying sectors** — sector overlay toggle and driver selection buttons now available on mobile track map, previously desktop-only
+- **Mobile leaderboard spacing** — improved UI layout for mobile Leaderboard
+
+---
+
 ## 1.2.3 — Track detail, telemetry expansion, and race finish improvements
 
 ### New Features
