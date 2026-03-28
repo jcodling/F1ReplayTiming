@@ -2,14 +2,14 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8000:8000"  # Change the left side to use a different host port
+      - "8743:8000"  # Change the left side to use a different host port
     environment:
-      - FRONTEND_URL=http://localhost:3000  # The URL your browser uses to access the frontend (for CORS)
+      - FRONTEND_URL=http://192.168.1.91:3791  # The URL your browser uses to access the frontend (for CORS)
       - DATA_DIR=/data
       # Optional - uncomment to enable features
       # - OPENROUTER_API_KEY=your-key-here  # enables photo/screenshot sync (manual entry sync works without this)
-      # - AUTH_ENABLED=true
-      # - AUTH_PASSPHRASE=your-passphrase
+      - AUTH_ENABLED=true
+      - AUTH_PASSPHRASE=7puRSzAodw8VJR%SAe!X
     volumes:
       - f1data:/data
       - f1cache:/data/fastf1-cache
@@ -17,9 +17,9 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"  # Change the left side to use a different host port
+      - "3791:3000"  # Change the left side to use a different host port
     environment:
-     - NEXT_PUBLIC_API_URL=http://localhost:8000 # The URL your browser uses to reach the backend 
+     - NEXT_PUBLIC_API_URL=http://192.168.1.91:8743 # The URL your browser uses to reach the backend 
     depends_on:
       - backend
 
