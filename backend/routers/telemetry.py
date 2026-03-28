@@ -8,8 +8,8 @@ router = APIRouter(prefix="/api", tags=["telemetry"])
 async def driver_telemetry(
     year: int,
     round_num: int,
-    type: str = Query("R"),
-    driver: str = Query(...),
+    type: str = Query("R", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
+    driver: str = Query(..., pattern=r"^[A-Z]{2,4}$"),
     lap: int = Query(...),
 ):
     data = get_json(f"sessions/{year}/{round_num}/{type}/telemetry/{driver}.json")

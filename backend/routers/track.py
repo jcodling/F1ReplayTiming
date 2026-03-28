@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api", tags=["track"])
 async def track_geometry(
     year: int,
     round_num: int,
-    type: str = Query("R", description="Session type"),
+    type: str = Query("R", description="Session type", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
 ):
     data = get_json(f"sessions/{year}/{round_num}/{type}/track.json")
     if data is not None:

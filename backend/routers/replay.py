@@ -222,7 +222,7 @@ async def replay_websocket(
     websocket: WebSocket,
     year: int,
     round_num: int,
-    type: str = Query("R"),
+    type: str = Query("R", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
     token: str = Query(""),
 ):
     from auth import is_auth_enabled, verify_token
@@ -343,12 +343,17 @@ async def replay_websocket(
             elif cmd.startswith("seek:"):
                 try:
                     target_time = float(cmd.split(":")[1])
-                    await send_seek_frame(target_time)
+                    if math.isfinite(target_time):
+                        max_time = frames[-1]["timestamp"] if frames else 0
+                        target_time = max(0.0, min(target_time, max_time))
+                        await send_seek_frame(target_time)
                 except ValueError:
                     pass
             elif cmd.startswith("seeklap:"):
                 try:
                     target_lap = int(cmd.split(":")[1])
+                    max_lap = frames[-1].get("lap", 1) if frames else 1
+                    target_lap = max(1, min(target_lap, max_lap))
                     for i, f in enumerate(frames):
                         if f["lap"] >= target_lap:
                             frame_index = i

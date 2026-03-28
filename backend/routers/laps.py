@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api", tags=["laps"])
 async def lap_data(
     year: int,
     round_num: int,
-    type: str = Query("R", description="Session type"),
+    type: str = Query("R", description="Session type", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
 ):
     data = get_json(f"sessions/{year}/{round_num}/{type}/laps.json")
     if data is None:

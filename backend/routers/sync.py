@@ -11,7 +11,10 @@ from typing import Optional
 import httpx
 from PIL import Image
 from pillow_heif import register_heif_opener
-from fastapi import APIRouter, UploadFile, File, Query, HTTPException, Body
+import os
+
+from fastapi import APIRouter, Depends, Header, UploadFile, File, Query, HTTPException, Body
+from auth import verify_token
 
 register_heif_opener()
 
@@ -19,6 +22,15 @@ from routers.replay import _get_frames  # reads from R2
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["sync"])
+
+
+def _require_auth_if_passphrase_set(authorization: str = Header("")):
+    """Require auth for cost-incurring endpoints whenever a passphrase is configured,
+    regardless of whether AUTH_ENABLED is set."""
+    if os.environ.get("AUTH_PASSPHRASE", "").strip():
+        token = authorization.removeprefix("Bearer ").strip()
+        if not verify_token(token):
+            raise HTTPException(status_code=401, detail="Unauthorized")
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 VISION_MODEL = "google/gemini-2.0-flash-001"
@@ -239,8 +251,9 @@ def _match_frame(frames: list[dict], extracted: dict) -> dict:
 async def sync_manual(
     year: int,
     round_num: int,
-    type: str = Query("R"),
+    type: str = Query("R", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
     body: dict = Body(...),
+    _auth=Depends(_require_auth_if_passphrase_set),
 ):
     """Match manual leaderboard input against replay frames."""
     if not body:
@@ -266,8 +279,9 @@ async def sync_manual(
 async def sync_from_photo(
     year: int,
     round_num: int,
-    type: str = Query("R"),
+    type: str = Query("R", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
     photo: UploadFile = File(...),
+    _auth=Depends(_require_auth_if_passphrase_set),
 ):
     # Read image
     image_bytes = await photo.read()

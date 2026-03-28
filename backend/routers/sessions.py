@@ -113,7 +113,7 @@ async def list_events(year: int):
 async def get_session(
     year: int,
     round_num: int,
-    type: str = Query("R", description="Session type: R, Q, S, FP1, FP2, FP3, SQ"),
+    type: str = Query("R", description="Session type: R, Q, S, FP1, FP2, FP3, SQ", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
 ):
     data = get_json(f"sessions/{year}/{round_num}/{type}/info.json")
     if data is not None:

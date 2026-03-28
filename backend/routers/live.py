@@ -269,12 +269,11 @@ async def live_websocket(
 ):
     from auth import is_auth_enabled, verify_token
 
-    await websocket.accept()
-
     if is_auth_enabled() and not verify_token(token):
-        await websocket.send_json({"type": "error", "message": "Unauthorized"})
         await websocket.close(code=4401, reason="Unauthorized")
         return
+
+    await websocket.accept()
 
     session = None
     try:
@@ -314,6 +313,7 @@ async def live_websocket(
                         cmd = __import__("json").loads(raw)
                         if cmd.get("command") == "skip" and session:
                             skip_seconds = float(cmd.get("seconds", 300))
+                            skip_seconds = max(0.0, min(skip_seconds, 3600.0))
                             session.skip_forward(skip_seconds)
                     except Exception:
                         pass

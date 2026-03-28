@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api", tags=["results"])
 async def race_results(
     year: int,
     round_num: int,
-    type: str = Query("R", description="Session type"),
+    type: str = Query("R", description="Session type", pattern=r"^(R|Q|S|SQ|FP1|FP2|FP3)$"),
 ):
     data = get_json(f"sessions/{year}/{round_num}/{type}/results.json")
     if data is None:

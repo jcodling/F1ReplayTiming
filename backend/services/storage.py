@@ -33,7 +33,11 @@ def _data_dir() -> Path:
 
 
 def _local_put_json(path: str, data: object) -> None:
-    filepath = _data_dir() / path
+    data_dir = _data_dir().resolve()
+    filepath = (data_dir / path).resolve()
+    if not filepath.is_relative_to(data_dir):
+        logger.warning(f"Path traversal attempt blocked: {path!r}")
+        return
     filepath.parent.mkdir(parents=True, exist_ok=True)
     body = json.dumps(data, separators=(",", ":")).encode()
     filepath.write_bytes(body)
@@ -41,14 +45,22 @@ def _local_put_json(path: str, data: object) -> None:
 
 
 def _local_get_json(path: str) -> object | None:
-    filepath = _data_dir() / path
+    data_dir = _data_dir().resolve()
+    filepath = (data_dir / path).resolve()
+    if not filepath.is_relative_to(data_dir):
+        logger.warning(f"Path traversal attempt blocked: {path!r}")
+        return None
     if not filepath.exists():
         return None
     return json.loads(filepath.read_bytes())
 
 
 def _local_exists(path: str) -> bool:
-    return (_data_dir() / path).exists()
+    data_dir = _data_dir().resolve()
+    filepath = (data_dir / path).resolve()
+    if not filepath.is_relative_to(data_dir):
+        return False
+    return filepath.exists()
 
 
 def _local_list_keys(prefix: str) -> list[str]:
